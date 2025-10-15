@@ -169,10 +169,18 @@ class NotificationService {
 
   /// Avvia il foreground service
   static Future<bool> startForegroundService() async {
+    print('🔵 [DEBUG] startForegroundService called');
+    
     if (await FlutterForegroundTask.isRunningService) {
+      print('⚠️  [DEBUG] Service already running, returning false');
       return false;
     }
     
+    // Carica le impostazioni per mostrare l'intervallo orario
+    final settings = await SettingsModel.load();
+    final notificationText = _buildNotificationText(settings);
+    
+    print('🔵 [DEBUG] Initializing FlutterForegroundTask...');
     FlutterForegroundTask.init(
       androidNotificationOptions: AndroidNotificationOptions(
         channelId: 'mensa_service',
@@ -194,32 +202,82 @@ class NotificationService {
       ),
     );
     
+    print('🔵 [DEBUG] Starting foreground service with custom icon...');
+    print('🔵 [DEBUG] Icon metadata name: notificationIcon');
+    print('🔵 [DEBUG] Notification text: $notificationText');
+    
     await FlutterForegroundTask.startService(
       serviceId: 256,
       notificationTitle: 'Servizio Promemoria Mensa',
-      notificationText: 'Monitora gli orari configurati',
+      notificationText: notificationText,
+      notificationIcon: const NotificationIcon(
+        metaDataName: 'notificationIcon',
+      ),
       callback: startCallback,
     );
     
+    print('✅ [DEBUG] Foreground service started successfully');
     return true;
+  }
+
+  /// Costruisce il testo della notifica con l'intervallo orario
+  static String _buildNotificationText(SettingsModel settings) {
+    final days = <String>[];
+    
+    // Mappa dei giorni della settimana (1=Lun, 2=Mar, ecc.)
+    const dayNames = {
+      1: 'Lun',
+      2: 'Mar',
+      3: 'Mer',
+      4: 'Gio',
+      5: 'Ven',
+      6: 'Sab',
+      7: 'Dom',
+    };
+    
+    // Costruisci lista giorni attivi
+    for (final day in settings.selectedDays.toList()..sort()) {
+      if (dayNames.containsKey(day)) {
+        days.add(dayNames[day]!);
+      }
+    }
+    
+    final daysText = days.isEmpty ? 'Nessun giorno' : days.join(', ');
+    
+    // Formatta orari come HH:mm
+    final startTime = '${settings.startTime.hour.toString().padLeft(2, '0')}:${settings.startTime.minute.toString().padLeft(2, '0')}';
+    final endTime = '${settings.endTime.hour.toString().padLeft(2, '0')}:${settings.endTime.minute.toString().padLeft(2, '0')}';
+    
+    return 'Attivo: $daysText • $startTime-$endTime';
   }
 
   /// Ferma il foreground service
   static Future<bool> stopForegroundService() async {
+    print('🔴 [DEBUG] stopForegroundService called');
+    
     if (!await FlutterForegroundTask.isRunningService) {
+      print('⚠️  [DEBUG] Service not running, returning false');
       return false;
     }
     
+    print('🔴 [DEBUG] Stopping foreground service...');
     await FlutterForegroundTask.stopService();
+    print('✅ [DEBUG] Foreground service stopped');
     return true;
   }
 
   /// Riavvia il foreground service (utile dopo cambio impostazioni)
   static Future<void> restartForegroundService() async {
+    print('🔄 [DEBUG] restartForegroundService called');
+    
     if (await FlutterForegroundTask.isRunningService) {
+      print('🔄 [DEBUG] Service is running, stopping it first...');
       await stopForegroundService();
       await Future.delayed(const Duration(milliseconds: 500));
+      print('🔄 [DEBUG] Now starting service again...');
       await startForegroundService();
+    } else {
+      print('⚠️  [DEBUG] Service was not running during restart attempt');
     }
   }
 

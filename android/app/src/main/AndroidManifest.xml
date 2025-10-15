@@ -10,6 +10,12 @@
         android:label="EatUp"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
+        
+        <!-- Custom notification icon for foreground service -->
+        <meta-data
+            android:name="notificationIcon"
+            android:resource="@drawable/ic_notification" />
+        
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -49,9 +55,6 @@
             <meta-data
                 android:name="notificationChannelId"
                 android:value="mensa_service" />
-            <meta-data
-                android:name="notificationIcon"
-                android:resource="@drawable/ic_notification" />
         </service>
     </application>
     <!-- Required to query activities that can process text, see:

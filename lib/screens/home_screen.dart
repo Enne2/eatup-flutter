@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/intl.dart';
 import '../widgets/status_card.dart';
 import '../services/notification_service.dart';
+import '../models/settings_model.dart';
 import 'settings_screen.dart';
 
 /// Schermata principale dell'app per gestire i promemoria della mensa
@@ -22,6 +23,7 @@ class _HomeScreenState extends State<HomeScreen> {
   bool _permissionGranted = false;
   bool _serviceRunning = false;
   String _todayStatus = 'non_set';
+  TimeOfDay? _endTime;
   Timer? _statusCheckTimer;
 
   @override
@@ -30,6 +32,7 @@ class _HomeScreenState extends State<HomeScreen> {
     _requestPermissions();
     _checkServiceStatus();
     _checkTodayStatus();
+    _loadSettings();
     
     // Aggiorna lo stato ogni 5 secondi
     _statusCheckTimer = Timer.periodic(const Duration(seconds: 5), (timer) {
@@ -41,6 +44,15 @@ class _HomeScreenState extends State<HomeScreen> {
   void dispose() {
     _statusCheckTimer?.cancel();
     super.dispose();
+  }
+
+  Future<void> _loadSettings() async {
+    final settings = await SettingsModel.load();
+    if (mounted) {
+      setState(() {
+        _endTime = settings.endTime;
+      });
+    }
   }
 
   Future<void> _checkTodayStatus() async {
@@ -159,7 +171,8 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: const Text('🍽️ Promemoria Mensa'),
+
+        title: const Text('eatUp - Promemoria Mensa'),
         actions: [
           IconButton(
             icon: const Icon(Icons.settings),
@@ -172,6 +185,7 @@ class _HomeScreenState extends State<HomeScreen> {
               
               // Se le impostazioni sono cambiate, suggerisci il riavvio del servizio
               if (result == true && mounted) {
+                await _loadSettings(); // Ricarica le impostazioni
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: const Text('⚠️ Riavvia il servizio per applicare le modifiche'),
@@ -192,12 +206,49 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       body: Center(
         child: Padding(
-          padding: const EdgeInsets.all(20.0),
+          padding: const EdgeInsets.all(2.0),
           child: SingleChildScrollView(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                StatusCard(status: _todayStatus),
+                // App Icon
+                Container(
+                  width: 120,
+                  height: 130,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.2),
+                        blurRadius: 5,
+                        spreadRadius: 1,
+                      ),
+                    ],
+                  ),
+                  child: ClipOval(
+                    child: Image.asset(
+                      'assets/images/logo.webp',
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        // Fallback se l'immagine non viene caricata
+                        return Container(
+                          color: Theme.of(context).colorScheme.primary,
+                          child: const Icon(
+                            Icons.restaurant_menu,
+                            size: 60,
+                            color: Colors.white,
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 30),
+                
+                StatusCard(
+                  status: _todayStatus,
+                  endTime: _endTime,
+                ),
                 const SizedBox(height: 30),
                 
                 // Azioni manuali
@@ -208,11 +259,6 @@ class _HomeScreenState extends State<HomeScreen> {
                       padding: const EdgeInsets.all(16.0),
                       child: Column(
                         children: [
-                          const Text(
-                            'Azioni Manuali',
-                            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                          ),
-                          const SizedBox(height: 16),
                           ElevatedButton.icon(
                             onPressed: _markAsBooked,
                             icon: const Icon(Icons.check),

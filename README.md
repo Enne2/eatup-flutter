@@ -8,8 +8,20 @@
 [![Dart](https://img.shields.io/badge/Dart-3.0+-0175C2?logo=dart)](https://dart.dev/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Android](https://img.shields.io/badge/Platform-Android-3DDC84?logo=android)](https://www.android.com/)
+[![Version](https://img.shields.io/badge/Version-1.1.0-blue.svg)](https://github.com/Enne2/eatup-flutter/releases)
 
 </div>
+
+---
+
+## 🎉 What's New in v1.1.0
+
+- ⚠️ **Avviso Ritardo**: Nuovo stato rosso quando sei oltre l'orario configurato
+- 🎨 **Icone Migliorate**: Logo personalizzato per notifiche (PNG) e app (WebP)  
+- 💫 **UI Migliorata**: Card con icone colorate per ogni stato
+- 🐛 **Bug Fix**: Miglioramenti di stabilità
+
+---
 
 ## 📱 Cos'è EatUp?
 
@@ -26,6 +38,25 @@ Con notifiche intelligenti configurabili, EatUp ti ricorda negli orari che prefe
 - 🌙 **Funziona in Background**: Servizio foreground sempre attivo
 - ⚡ **Leggera e Veloce**: Minimo impatto sulla batteria
 - 🎨 **UI Moderna**: Material 3 Design
+- ⚠️ **Avviso Ritardo**: Ti avvisa in rosso se sei oltre l'orario
+- 🎨 **Icone Personalizzate**: Logo custom per notifiche e app
+- 📱 **Design Responsivo**: Card con icone colorate per ogni stato
+
+## 📸 Screenshots
+
+<div align="center">
+
+| Home Screen | Impostazioni | Notifica |
+|------------|--------------|----------|
+| ![Home](screenshots/home_screen_default.png) | ![Settings](screenshots/settings_screen.png) | ![Notification](screenshots/notification.png) |
+
+| Prenotato | In Ritardo | Weekend |
+|-----------|------------|---------|
+| ![Booked](screenshots/home_screen_booked.png) | ![Late](screenshots/home_screen_late.png) | ![Weekend](screenshots/home_screen_weekend.png) |
+
+*Screenshots will be added soon*
+
+</div>
 
 ## 🚀 Come Funziona
 
