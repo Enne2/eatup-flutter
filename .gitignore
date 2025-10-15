@@ -60,14 +60,14 @@ app.*.map.json
 
 # iOS/macOS (not needed for Android-only project, but kept for compatibility)
 # Uncomment to ignore iOS/macOS completely if never targeting them
-# /ios/
-# /macos/
+/ios/
+/macos/
 
 # Web (not needed for Android-only project)
-# Uncomment to ignore web completely if never targeting it
-# /web/
+#Uncomment to ignore web completely if never targeting it
+/web/
 
 # Windows/Linux desktop (not needed for Android-only project)
 # Uncomment to ignore desktop completely if never targeting them
-# /windows/
-# /linux/
+/windows/
+/linux/
